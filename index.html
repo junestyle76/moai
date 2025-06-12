@@ -246,25 +246,29 @@
                         <div class="row control-group">
                             <div class="form-group col-xs-12 floating-label-form-group controls">
                                 <label for="gender">Gender</label>
-                                <select id="gender" name="gender" required class="form-control" placeholder="Gender">
-									<option value="">Please choose your gender.</option>
-									<option value="male">male</option>
-									<option value="female">female</option>
-									<option value="other">etc.</option>
-								</select>
+                                <!-- <select id="gender" name="gender" placeholder="Gender" required>
+									<option value=""> Please choose your gender. </option>
+									<option value="male"> male     </option>
+									<option value="female"> female     </option>
+									<option value="other"> etc.     </option>
+								</select> -->
+                                <input class="form-control" placeholder="Gender" id="gender" required data-validation-required-message="Please enter your gender. male/female/etc.">								
+								<p class="help-block text-danger"></p>
                             </div>
                         </div>
                         <div class="row control-group">
                             <div class="form-group col-xs-12 floating-label-form-group controls">
-								<label for="age">Age</label><br>
-								<select id="age" name="age" required class="form-control" placeholder="Age">
+								<label for="age">Age</label>
+								<!-- <select id="age" name="age" placeholder="Age" required>
 									<option value="">Please choose your age group.</option>
 									<option value="10대">Teenage</option>
 									<option value="20대">20s</option>
 									<option value="30대">30s</option>
 									<option value="40대">40s</option>
 									<option value="50대 이상">Over 50s</option>
-								</select>
+								</select> -->
+                                <input class="form-control" placeholder="Age" id="age" required data-validation-required-message="Please choose your age group. Teenage/20s/30s/40s/Over 50s">
+								<p class="help-block text-danger"></p>				
                             </div>
                         </div>							
                         <div class="row control-group">
