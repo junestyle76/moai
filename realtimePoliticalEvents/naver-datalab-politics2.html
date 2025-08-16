@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>네이버 데이터랩 - 검색 트렌드 대시보드</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="white" opacity="0.1"><path d="M0,0v46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1547,4.8,1550,4.4V0Z"/></svg>') repeat-x;
+            background-size: 1000px 100px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .last-updated {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+        }
+
+        .dashboard {
+            padding: 30px;
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .keywords-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .keywords-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .keyword-category {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-top: 4px solid;
+        }
+
+        .keyword-category.politics { border-top-color: #ff6b6b; }
+        .keyword-category.current { border-top-color: #ff8787; }
+        .keyword-category.economy { border-top-color: #45b7d1; }
+        .keyword-category.society { border-top-color: #96ceb4; }
+        .keyword-category.culture { border-top-color: #feca57; }
+        .keyword-category.daily { border-top-color: #a55eea; }
+
+        .category-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .keyword-list {
+            list-style: none;
+        }
+
+        .keyword-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .keyword-item:last-child {
+            border-bottom: none;
+        }
+
+        .keyword-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .keyword-rank {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            min-width: 25px;
+            text-align: center;
+        }
+
+        .refresh-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: 60px;
+            height: 60px;
+            font-size: 1.2rem;
+        }
+
+        .refresh-btn:hover {
+            transform: scale(1.1) rotate(180deg);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .dashboard {
+                padding: 20px;
+            }
+        }
+
+        .trending-keywords {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .trending-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        .trending-item {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .trending-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.1) 75%, transparent 75%);
+            background-size: 8px 8px;
+        }
+
+        .trending-keyword {
+            font-weight: 600;
+            font-size: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .trending-rank {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 네이버 데이터랩</h1>
+            <p>검색 트렌드 분석 대시보드</p>
+            <div class="last-updated" id="lastUpdated">
+                마지막 업데이트: <span id="updateTime"></span>
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                데이터를 불러오는 중...
+            </div>
+
+            <!-- 급상승 검색어 Top 5 -->
+            <div class="trending-keywords">
+                <h2 style="text-align: center; margin-bottom: 25px; color: #333; font-size: 1.5rem;">🔥 급상승 검색어 TOP 5</h2>
+                <div class="trending-grid" id="trendingGrid">
+                    <!-- 동적으로 생성됩니다 -->
+                </div>
+            </div>
+
+            <!-- 차트 섹션 -->
+            <div class="charts-container">
+                <div class="chart-card">
+                    <div class="chart-title">시간대별 검색 트렌드 (급상승 Top 5)</div>
+                    <canvas id="trendChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">카테고리별 검색 비율</div>
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 카테고리별 인기 검색어 -->
+            <div class="keywords-section">
+                <h2 style="text-align: center; margin-bottom: 25px; color: #333; font-size: 1.5rem;">📊 카테고리별 인기 검색어</h2>
+                <div class="keywords-grid">
+                    <div class="keyword-category politics">
+                        <div class="category-title">🏛️ 정치</div>
+                        <ul class="keyword-list" id="politicsKeywords"></ul>
+                    </div>
+                    <div class="keyword-category current">
+                        <div class="category-title">📰 시사</div>
+                        <ul class="keyword-list" id="currentKeywords"></ul>
+                    </div>
+                    <div class="keyword-category economy">
+                        <div class="category-title">💰 경제</div>
+                        <ul class="keyword-list" id="economyKeywords"></ul>
+                    </div>
+                    <div class="keyword-category society">
+                        <div class="category-title">🏘️ 사회</div>
+                        <ul class="keyword-list" id="societyKeywords"></ul>
+                    </div>
+                    <div class="keyword-category culture">
+                        <div class="category-title">🎨 문화</div>
+                        <ul class="keyword-list" id="cultureKeywords"></ul>
+                    </div>
+                    <div class="keyword-category daily">
+                        <div class="category-title">☀️ 일상</div>
+                        <ul class="keyword-list" id="dailyKeywords"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="refresh-btn" onclick="refreshData()" title="데이터 수동 새로고침">
+        🔄
+    </button>
+
+    <script>
+        // 카테고리별 키워드 데이터
+        const keywordsByCategory = {
+            politics: ['국정감사', '국회의원', '대통령', '정부정책', '정당정치', '선거제도', '국정운영', '정치개혁', '의정활동', '국무총리', '정치뉴스', '국정조사', '청문회', '정치갈등', '정치협상'],
+            current: ['시사토론', '뉴스분석', '사회이슈', '시사상식', '언론보도', '시사프로그램', '시사해설', '현안분석', '이슈리포트', '시사매거진', '정치시사', '사회시사', '경제시사', '국제시사', '시사평론'],
+            economy: ['금리정책', '부동산시장', '주식투자', 'GDP성장률', '인플레이션', '환율동향', '경제지표', '경기전망', '증시분석', '코스피', '경제정책', '금융시장', '무역수지', '경제성장', '물가상승'],
+            society: ['사회복지', '교육정책', '의료제도', '인권보호', '환경문제', '교통정책', '주거복지', '노동환경', '사회보장', '복지혜택', '교육개혁', '사회갈등', '시민권리', '공공서비스', '사회안전'],
+            culture: ['K-POP', '드라마', '영화', '전시회', '콘서트', '문화행사', '예술공연', '축제', '박물관', '도서', '웹툰', '게임', '스포츠', '연예뉴스', '문화생활'],
+            daily: ['날씨', '건강관리', '요리레시피', '여행정보', '쇼핑', '패션', '뷰티', '운동', '취미', '반려동물', '육아', '생활정보', '맛집', '카페', '일상팁']
+        };
+
+        let trendChart, categoryChart;
+        let topTrendingKeywords = [];
+
+        // 급상승 키워드 Top 5 생성
+        function generateTopTrendingKeywords() {
+            const allKeywords = Object.values(keywordsByCategory).flat();
+            const shuffled = allKeywords.sort(() => 0.5 - Math.random());
+            topTrendingKeywords = shuffled.slice(0, 5);
+            return topTrendingKeywords;
+        }
+
+        // 급상승 키워드 표시 업데이트
+        function updateTrendingKeywords() {
+            const keywords = generateTopTrendingKeywords();
+            const trendingGrid = document.getElementById('trendingGrid');
+            
+            trendingGrid.innerHTML = keywords.map((keyword, index) => `
+                <div class="trending-item">
+                    <div class="trending-rank">${index + 1}위</div>
+                    <div class="trending-keyword">${keyword}</div>
+                </div>
+            `).join('');
+        }
+
+        // 차트 초기화
+        function initCharts() {
+            // 시간대별 트렌드 차트 (급상승 Top 5)
+            const trendCtx = document.getElementById('trendChart').getContext('2d');
+            const hours = Array.from({length: 24}, (_, i) => i + '시');
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57'];
+            
+            trendChart = new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: hours,
+                    datasets: topTrendingKeywords.map((keyword, index) => ({
+                        label: keyword,
+                        data: generateTrendData(24),
+                        borderColor: colors[index],
+                        backgroundColor: colors[index] + '20',
+                        tension: 0.4,
+                        fill: false,
+                        pointRadius: 3,
+                        pointHoverRadius: 5
+                    }))
+                },
+                options: {
+                    responsive: true,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: '시간'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: '검색량 지수'
+                            },
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    }
+                }
+            });
+
+            // 카테고리별 비율 차트
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            const categoryNames = ['정치', '시사', '경제', '사회', '문화', '일상'];
+            const categoryColors = ['#ff6b6b', '#ff8787', '#45b7d1', '#96ceb4', '#feca57', '#a55eea'];
+            
+            categoryChart = new Chart(categoryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: categoryNames,
+                    datasets: [{
+                        data: generateCategoryData(),
+                        backgroundColor: categoryColors,
+                        borderWidth: 3,
+                        borderColor: '#fff',
+                        hoverBorderWidth: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                usePointStyle: true
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 트렌드 데이터 생성 (더 현실적인 패턴)
+        function generateTrendData(count) {
+            const data = [];
+            let baseValue = Math.floor(Math.random() * 30) + 20;
+            
+            for (let i = 0; i < count; i++) {
+                // 출근시간(7-9시), 점심시간(12-13시), 퇴근시간(18-20시)에 피크
+                let multiplier = 1;
+                if ((i >= 7 && i <= 9) || i === 12 || (i >= 18 && i <= 20)) {
+                    multiplier = 1.5 + Math.random() * 0.5;
+                } else if (i >= 22 || i <= 6) {
+                    multiplier = 0.3 + Math.random() * 0.3;
+                }
+                
+                const value = Math.floor(baseValue * multiplier + Math.random() * 10);
+                data.push(Math.max(5, value));
+                baseValue += (Math.random() - 0.5) * 5; // 약간의 변동
+                baseValue = Math.max(10, Math.min(80, baseValue)); // 범위 제한
+            }
+            return data;
+        }
+
+        // 카테고리 데이터 생성
+        function generateCategoryData() {
+            const data = [];
+            let remaining = 100;
+            
+            for (let i = 0; i < 5; i++) {
+                const value = Math.floor(Math.random() * (remaining / 2)) + 5;
+                data.push(value);
+                remaining -= value;
+            }
+            data.push(Math.max(5, remaining)); // 마지막 카테고리
+            
+            return data;
+        }
+
+        // 카테고리별 키워드 업데이트
+        function updateCategoryKeywords() {
+            Object.keys(keywordsByCategory).forEach(category => {
+                const container = document.getElementById(category + 'Keywords');
+                const keywords = keywordsByCategory[category];
+                const selectedKeywords = keywords.sort(() => 0.5 - Math.random()).slice(0, 5);
+                
+                container.innerHTML = selectedKeywords.map((keyword, index) => `
+                    <li class="keyword-item">
+                        <span class="keyword-name">${keyword}</span>
+                        <span class="keyword-rank">${index + 1}</span>
+                    </li>
+                `).join('');
+            });
+        }
+
+        // 차트 데이터 업데이트
+        function updateCharts() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57'];
+            
+            // 트렌드 차트 업데이트
+            trendChart.data.datasets = topTrendingKeywords.map((keyword, index) => ({
+                label: keyword,
+                data: generateTrendData(24),
+                borderColor: colors[index],
+                backgroundColor: colors[index] + '20',
+                tension: 0.4,
+                fill: false,
+                pointRadius: 3,
+                pointHoverRadius: 5
+            }));
+            trendChart.update('active');
+
+            // 카테고리 차트 업데이트
+            categoryChart.data.datasets[0].data = generateCategoryData();
+            categoryChart.update('active');
+        }
+
+        // 시간 업데이트
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('updateTime').textContent = timeString;
+        }
+
+        // 데이터 새로고침
+        function refreshData() {
+            const loading = document.getElementById('loading');
+            
+            loading.style.display = 'block';
+            
+            setTimeout(() => {
+                updateTrendingKeywords();
+                updateCategoryKeywords();
+                updateCharts();
+                updateTime();
+                
+                loading.style.display = 'none';
+            }, 1500);
+        }
+
+        // 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTrendingKeywords();
+            initCharts();
+            updateCategoryKeywords();
+            updateTime();
+            
+            // 시간은 1초마다 업데이트
+            setInterval(updateTime, 1000);
+        });
+
+        // 실제 네이버 데이터랩 API 연동 함수 (참고용)
+        async function fetchNaverDatalabAPI(keywords, startDate, endDate) {
+            const apiUrl = 'https://openapi.naver.com/v1/datalab/search';
+            const clientId = 'MPYpKwHVhq02Q018WFIj'; //'YOUR_CLIENT_ID';
+            const clientSecret = 'Ts_1PvSrAR'; //'YOUR_CLIENT_SECRET';
+            
+            const requestBody = {
+                startDate: startDate,
+                endDate: endDate,
+                timeUnit: 'date',
+                keywordGroups: keywords.map(keyword => ({
+                    groupName: keyword,
+                    keywords: [keyword]
+                }))
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'X-Naver-Client-Id': clientId,
+                        'X-Naver-Client-Secret': clientSecret,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    throw new Error('API 호출 실패');
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('API 호출 오류:', error);
+                return null;
+            }
+        }
+    </script>
+</body>
+</html>
