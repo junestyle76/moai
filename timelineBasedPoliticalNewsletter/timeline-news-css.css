@@ -1,0 +1,364 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+    color: white;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.header p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.date-navigation {
+    background: rgba(255,255,255,0.95);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+}
+
+.year-tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.year-tab {
+    padding: 12px 25px;
+    background: #f8f9ff;
+    border: 2px solid #e0e4ff;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    color: #667eea;
+}
+
+.year-tab.active {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    border-color: #667eea;
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.year-tab:hover:not(.active) {
+    background: #e0e4ff;
+    transform: translateY(-2px);
+}
+
+.month-tabs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 10px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.month-tab {
+    padding: 15px 10px;
+    background: #f8f9ff;
+    border: 2px solid #e0e4ff;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    color: #667eea;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.month-tab.active {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    border-color: #667eea;
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.month-tab:hover:not(.active) {
+    background: #e0e4ff;
+    transform: translateY(-2px);
+}
+
+.timeline {
+    position: relative;
+    background: rgba(255,255,255,0.95);
+    border-radius: 20px;
+    padding: 40px 30px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+    min-height: 400px;
+}
+
+.current-period {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #667eea;
+    margin-bottom: 30px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.news-item {
+    display: flex;
+    margin-bottom: 25px;
+    padding: 20px;
+    background: linear-gradient(145deg, #f8f9ff, #ffffff);
+    border-radius: 15px;
+    margin-left: 20px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.news-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.news-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+
+.news-item:hover::before {
+    transform: scaleX(1);
+}
+
+.news-datetime {
+    min-width: 140px;
+    font-size: 0.9rem;
+    color: #666;
+    background: #f0f2ff;
+    padding: 10px 15px;
+    border-radius: 10px;
+    margin-right: 20px;
+    text-align: center;
+    border: 1px solid #e0e4ff;
+}
+
+.news-datetime .date {
+    font-weight: bold;
+    color: #667eea;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.news-datetime .time {
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+.news-content {
+    flex: 1;
+}
+
+.news-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.news-summary {
+    color: #666;
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+    line-height: 1.5;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
+.news-summary.expanded {
+    -webkit-line-clamp: none;
+    white-space: normal;
+    max-height: none;
+}
+
+.news-item.expanded {
+    background: linear-gradient(145deg, #f0f2ff, #ffffff);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+
+.news-item.expanded .news-summary {
+    color: #555;
+    line-height: 1.6;
+}
+
+.news-link {
+    display: inline-flex;
+    align-items: center;
+    color: #667eea;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 8px 16px;
+    background: #f0f2ff;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    border: 1px solid #e0e4ff;
+}
+
+.news-link:hover {
+    background: #667eea;
+    color: white;
+    transform: scale(1.05);
+}
+
+.news-link::after {
+    content: '→';
+    margin-left: 8px;
+    font-weight: bold;
+    transition: transform 0.3s ease;
+}
+
+.news-link:hover::after {
+    transform: translateX(3px);
+}
+
+.expand-button {
+    display: inline-flex;
+    align-items: center;
+    color: #667eea;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 8px 16px;
+    background: #f0f2ff;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    border: 1px solid #e0e4ff;
+    cursor: pointer;
+    border: none;
+}
+
+.expand-button:hover {
+    background: #667eea;
+    color: white;
+    transform: scale(1.05);
+}
+
+.expand-button.collapse {
+    background: #764ba2;
+    color: white;
+}
+
+.expand-button.collapse:hover {
+    background: #5a3a7a;
+}
+
+.expand-button::after {
+    content: '↓';
+    margin-left: 8px;
+    font-weight: bold;
+    transition: transform 0.3s ease;
+}
+
+.expand-button.collapse::after {
+    content: '↑';
+    transform: rotate(0deg);
+}
+
+.no-news {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+    font-size: 1.1rem;
+}
+
+.no-news .icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.add-news {
+    display: none;
+}
+
+.timeline-dot {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 20px 10px;
+    }
+    
+    .news-item {
+        flex-direction: column;
+        margin-left: 10px;
+    }
+    
+    .news-datetime {
+        min-width: auto;
+        margin-right: 0;
+        margin-bottom: 15px;
+        width: fit-content;
+    }
+
+    .year-tabs, .month-tabs {
+        gap: 8px;
+    }
+
+    .year-tab, .month-tab {
+        padding: 10px 15px;
+        font-size: 0.85rem;
+    }
+
+    /* 모바일 반응형 조정 */
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 툴팁 관련 스타일 제거 */
