@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>실시간 뉴스 타임라인</title>
+    <meta name="description" content="정치, 시사, 경제, 사회 이슈를 타임라인 형태로 제공하는 실시간 뉴스 사이트">
+    <meta name="keywords" content="뉴스, 타임라인, 정치, 경제, 사회, 시사">
+    <meta name="author" content="Timeline News">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="실시간 뉴스 타임라인">
+    <meta property="og:description" content="정치, 시사, 경제, 사회 이슈를 한눈에 보는 타임라인">
+    <meta property="og:url" content="https://yourusername.github.io/timeline-news-site">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary">
+    <meta property="twitter:title" content="실시간 뉴스 타임라인">
+    <meta property="twitter:description" content="정치, 시사, 경제, 사회 이슈를 한눈에 보는 타임라인">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="header-title">
+                <h1 class="title">
+                    <i data-lucide="calendar" class="title-icon"></i>
+                    실시간 뉴스 타임라인
+                </h1>
+                <div class="last-update" id="lastUpdate">
+                    마지막 업데이트: 
+                </div>
+            </div>
+
+            <!-- Year Tabs -->
+            <div class="year-tabs" id="yearTabs"></div>
+            
+            <!-- Search and Filter -->
+            <div class="search-filter">
+                <div class="search-container">
+                    <i data-lucide="search" class="search-icon"></i>
+                    <input
+                        type="text"
+                        placeholder="뉴스 검색..."
+                        class="search-input"
+                        id="searchInput"
+                        aria-label="뉴스 검색"
+                    />
+                </div>
+                <div class="filter-container">
+                    <i data-lucide="filter" class="filter-icon"></i>
+                    <select class="filter-select" id="categoryFilter" aria-label="카테고리 선택">
+                        <option value="all">전체 카테고리</option>
+                        <option value="정치">정치</option>
+                        <option value="경제">경제</option>
+                        <option value="사회">사회</option>
+                        <option value="시사">시사</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div id="loadingSpinner" class="loading-spinner hidden">
+            <i data-lucide="loader-2" class="spinner-icon"></i>
+            <span>뉴스를 불러오는 중...</span>
+        </div>
+        
+        <div id="noResults" class="no-results hidden">
+            검색 조건에 맞는 뉴스가 없습니다.
+        </div>
+        
+        <div id="timelineContainer" class="timeline-container"></div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>실시간 뉴스 타임라인 - 정치, 시사, 경제, 사회 이슈를 한눈에</p>
+            <p class="footer-note">※ Google Trends API 연동으로 자동 업데이트 예정</p>
+            <div class="footer-links">
+                <a href="https://github.com/yourusername/timeline-news-site" target="_blank" rel="noopener noreferrer">
+                    <i data-lucide="github" class="footer-icon"></i>
+                    GitHub
+                </a>
+                <span class="footer-separator">|</span>
+                <span>&copy; 2025 Timeline News. All rights reserved.</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/data.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

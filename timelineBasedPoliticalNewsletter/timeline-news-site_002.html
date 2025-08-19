@@ -1,0 +1,437 @@
+import React, { useState, useEffect } from 'react';
+import { ChevronDown, ChevronRight, ExternalLink, Search, Filter, Calendar, MoreHorizontal } from 'lucide-react';
+
+const TimelineNewsSite = () => {
+  const [expandedMonths, setExpandedMonths] = useState({});
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedYear, setSelectedYear] = useState('2025');
+  const [expandedSummaries, setExpandedSummaries] = useState({});
+
+  // 샘플 데이터 - 실제로는 API에서 가져올 데이터
+  const newsData = {
+    '2025-08': [
+      {
+        id: 1,
+        date: '2025-08-18',
+        time: '14:30',
+        category: '정치',
+        title: '국정감사 일정 확정, 9월 첫째 주 시작',
+        summary: '국회는 오는 9월 첫째 주부터 시작되는 국정감사 일정을 확정했다고 발표했습니다. 이번 국정감사에서는 코로나19 대응과 경제정책 전반에 대한 점검이 이뤄질 예정이며, 여야 간 치열한 공방이 예상됩니다.',
+        link: 'https://example.com/news1',
+        priority: 'high'
+      },
+      {
+        id: 2,
+        date: '2025-08-18',
+        time: '10:15',
+        category: '경제',
+        title: '코스피 2,650선 돌파, 반도체주 강세',
+        summary: '코스피가 2,650선을 돌파하며 상승세를 이어가고 있습니다. 삼성전자와 SK하이닉스 등 반도체 주가 강세를 보이고 있으며, 전문가들은 글로벌 반도체 수요 증가가 주요 요인이라고 분석했습니다.',
+        link: 'https://example.com/news2',
+        priority: 'medium'
+      },
+      {
+        id: 3,
+        date: '2025-08-17',
+        time: '16:45',
+        category: '사회',
+        title: '폭염특보 연장, 체감온도 35도 육박',
+        summary: '기상청은 전국 대부분 지역에 내려진 폭염특보를 연장한다고 발표했습니다. 특히 내륙 지역의 경우 체감온도가 35도를 넘어서며 열대야 현상도 지속될 것으로 예상된다고 밝혔습니다.',
+        link: '',
+        priority: 'medium'
+      },
+      {
+        id: 4,
+        date: '2025-08-17',
+        time: '09:20',
+        category: '시사',
+        title: '교육부, 2025년 대입제도 개선안 발표',
+        summary: '교육부가 공정성과 다양성을 강화한 2025년 대입제도 개선안을 발표했습니다.',
+        link: 'https://example.com/news3',
+        priority: 'high'
+      },
+      {
+        id: 15,
+        date: '2025-08-16',
+        time: '11:30',
+        category: '경제',
+        title: '최저임금 인상률 5.1% 확정',
+        summary: '내년도 최저임금이 시간당 1만 30원으로 확정되어 올해 대비 5.1% 인상됩니다. 이는 지난해 인상률 2.5%를 크게 웃도는 수준으로, 소상공인과 노동계의 입장이 첨예하게 대립하고 있습니다.',
+        link: 'https://example.com/news15',
+        priority: 'high'
+      },
+      {
+        id: 16,
+        date: '2025-08-15',
+        time: '15:20',
+        category: '사회',
+        title: '광복절 기념식, 독립유공자 후손 초청',
+        summary: '제80주년 광복절 기념식이 세종문화회관에서 열렸습니다. 올해는 독립유공자 후손들을 특별 초청하여 의미를 더했으며, 대통령은 기념사에서 역사 교육의 중요성을 강조했습니다.',
+        link: '',
+        priority: 'medium'
+      }
+    ],
+    '2025-07': [
+      {
+        id: 5,
+        date: '2025-07-31',
+        time: '18:00',
+        category: '경제',
+        title: '한국은행 기준금리 동결 결정',
+        summary: '한국은행이 기준금리를 현 수준인 3.50%로 동결하기로 결정했습니다. 물가 안정과 경기 회복 사이의 균형을 고려한 결정으로, 향후 국내외 경제 동향을 지켜보며 통화정책 방향을 결정할 예정입니다.',
+        link: 'https://example.com/news4',
+        priority: 'high'
+      },
+      {
+        id: 6,
+        date: '2025-07-30',
+        time: '13:25',
+        category: '정치',
+        title: '여야, 추경예산안 협상 재개',
+        summary: '여야가 중단되었던 추가경정예산안 협상을 재개하기로 합의했습니다.',
+        link: 'https://example.com/news5',
+        priority: 'medium'
+      },
+      {
+        id: 7,
+        date: '2025-07-29',
+        time: '09:15',
+        category: '시사',
+        title: '디지털 바우처 지원 대상 확대',
+        summary: '정부가 소상공인을 위한 디지털 바우처 지원 대상을 기존 10만 개소에서 15만 개소로 확대한다고 발표했습니다. 온라인 판매 플랫폼 구축과 디지털 마케팅 비용을 지원하여 디지털 전환을 촉진하겠다는 방침입니다.',
+        link: '',
+        priority: 'medium'
+      },
+      {
+        id: 8,
+        date: '2025-07-28',
+        time: '14:40',
+        category: '사회',
+        title: '장마 끝, 무더위 본격 시작',
+        summary: '기상청이 중부지방 장마 종료를 선언했습니다. 이제 본격적인 무더위가 시작될 것으로 예상되며, 폭염 대비 건강관리에 각별한 주의가 필요합니다.',
+        link: 'https://example.com/news6',
+        priority: 'low'
+      }
+    ],
+    '2024-12': [
+      {
+        id: 9,
+        date: '2024-12-31',
+        time: '23:59',
+        category: '사회',
+        title: '2024년 마지막 날, 새해 준비 완료',
+        summary: '2024년의 마지막 날을 맞아 전국 각지에서 새해맞이 행사 준비가 마무리되었습니다.',
+        link: '',
+        priority: 'low'
+      },
+      {
+        id: 10,
+        date: '2024-12-30',
+        time: '16:20',
+        category: '경제',
+        title: '2024년 경제성장률 2.8% 기록',
+        summary: '한국의 2024년 경제성장률이 2.8%를 기록하며 정부 목표치를 달성했습니다. 수출 증가와 내수 회복이 주요 성장 동력으로 작용했다고 분석됩니다.',
+        link: 'https://example.com/news7',
+        priority: 'high'
+      }
+    ],
+    '2024-11': [
+      {
+        id: 11,
+        date: '2024-11-30',
+        time: '12:00',
+        category: '정치',
+        title: '국회 예산안 처리 완료',
+        summary: '국회가 2025년도 예산안 처리를 완료했습니다. 총 677조원 규모의 예산이 확정되었으며, 복지와 인프라 투자에 중점을 둔 것이 특징입니다.',
+        link: 'https://example.com/news8',
+        priority: 'high'
+      },
+      {
+        id: 12,
+        date: '2024-11-25',
+        time: '10:30',
+        category: '시사',
+        title: '수능 성적 발표, 만점자 역대 최다',
+        summary: '2025학년도 대학수학능력시험 성적이 발표되었습니다. 올해는 만점자가 역대 최다를 기록하며 전체적인 성적 향상이 두드러졌습니다.',
+        link: '',
+        priority: 'medium'
+      }
+    ],
+    '2024-10': [
+      {
+        id: 13,
+        date: '2024-10-15',
+        time: '14:15',
+        category: '경제',
+        title: '반도체 수출 3개월 연속 증가',
+        summary: '우리나라 반도체 수출이 3개월 연속 증가세를 보이고 있습니다. AI 반도체 수요 급증과 메모리 반도체 가격 상승이 주요 요인으로 분석됩니다.',
+        link: 'https://example.com/news9',
+        priority: 'medium'
+      },
+      {
+        id: 14,
+        date: '2024-10-03',
+        time: '11:45',
+        category: '사회',
+        title: '추석 연휴 교통량 전년 대비 15% 증가',
+        summary: '올해 추석 연휴 기간 고속도로 교통량이 전년 대비 15% 증가한 것으로 집계되었습니다. 코로나19 완전 해제 이후 첫 추석으로 고향 방문이 크게 늘었습니다.',
+        link: '',
+        priority: 'low'
+      }
+    ]
+  };
+
+  const categories = ['all', '정치', '경제', '사회', '시사'];
+  const categoryColors = {
+    '정치': 'bg-blue-100 text-blue-800',
+    '경제': 'bg-green-100 text-green-800',
+    '사회': 'bg-purple-100 text-purple-800',
+    '시사': 'bg-orange-100 text-orange-800'
+  };
+
+  const priorityColors = {
+    'high': 'border-l-red-500',
+    'medium': 'border-l-yellow-500',
+    'low': 'border-l-gray-300'
+  };
+
+  const toggleMonth = (month) => {
+    setExpandedMonths(prev => ({
+      ...prev,
+      [month]: !prev[month]
+    }));
+  };
+
+  const toggleSummary = (newsId) => {
+    setExpandedSummaries(prev => ({
+      ...prev,
+      [newsId]: !prev[newsId]
+    }));
+  };
+
+  const truncateText = (text, maxLength = 100) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  };
+
+  const getYearsFromData = () => {
+    const years = [...new Set(Object.keys(newsData).map(month => month.split('-')[0]))];
+    return years.sort((a, b) => b - a); // 최신년도 먼저
+  };
+
+  const getNewsCountByYear = (year) => {
+    return Object.entries(newsData)
+      .filter(([month]) => month.startsWith(year))
+      .reduce((total, [, monthNews]) => total + monthNews.length, 0);
+  };
+
+  const filteredNewsData = () => {
+    let filtered = {};
+    Object.keys(newsData).forEach(month => {
+      if (month.startsWith(selectedYear)) {
+        const monthNews = newsData[month].filter(item => {
+          const categoryMatch = selectedCategory === 'all' || item.category === selectedCategory;
+          const searchMatch = searchTerm === '' || 
+            item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.summary.toLowerCase().includes(searchTerm.toLowerCase());
+          return categoryMatch && searchMatch;
+        });
+        if (monthNews.length > 0) {
+          filtered[month] = monthNews;
+        }
+      }
+    });
+    return filtered;
+  };
+
+  const formatMonthYear = (monthKey) => {
+    const [year, month] = monthKey.split('-');
+    return `${year}년 ${parseInt(month)}월`;
+  };
+
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('ko-KR', { 
+      month: 'long', 
+      day: 'numeric',
+      weekday: 'short'
+    });
+  };
+
+  // 초기 상태에서 현재 월을 확장
+  useEffect(() => {
+    const currentMonth = '2025-08';
+    setExpandedMonths({ [currentMonth]: true });
+  }, []);
+
+  const filtered = filteredNewsData();
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* 헤더 */}
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-4xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-2xl font-bold text-gray-900 flex items-center">
+              <Calendar className="mr-2 text-blue-600" />
+              실시간 뉴스 타임라인
+            </h1>
+            <div className="text-sm text-gray-500">
+              마지막 업데이트: {new Date().toLocaleString('ko-KR')}
+            </div>
+          </div>
+
+          {/* 년도 탭 */}
+          <div className="mb-4">
+            <div className="flex flex-wrap gap-2">
+              {getYearsFromData().map(year => (
+                <button
+                  key={year}
+                  onClick={() => {
+                    setSelectedYear(year);
+                    setExpandedMonths({});
+                  }}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    selectedYear === year
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {year}년 ({getNewsCountByYear(year)}건)
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          {/* 검색 및 필터 */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="뉴스 검색..."
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Filter className="text-gray-500 w-4 h-4" />
+              <select
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
+                <option value="all">전체 카테고리</option>
+                {categories.slice(1).map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* 메인 컨텐츠 */}
+      <main className="max-w-4xl mx-auto px-6 py-8">
+        {Object.keys(filtered).length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">검색 조건에 맞는 뉴스가 없습니다.</p>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {Object.entries(filtered).map(([month, monthNews]) => (
+              <div key={month} className="bg-white rounded-xl shadow-sm border overflow-hidden">
+                {/* 월 헤더 */}
+                <button
+                  onClick={() => toggleMonth(month)}
+                  className="w-full px-6 py-4 bg-gray-50 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-between"
+                >
+                  <h2 className="text-xl font-semibold text-gray-800 flex items-center">
+                    {expandedMonths[month] ? 
+                      <ChevronDown className="mr-2 w-5 h-5" /> : 
+                      <ChevronRight className="mr-2 w-5 h-5" />
+                    }
+                    {formatMonthYear(month)}
+                  </h2>
+                  <span className="text-sm text-gray-500 bg-white px-3 py-1 rounded-full">
+                    {monthNews.length}건
+                  </span>
+                </button>
+
+                {/* 뉴스 목록 */}
+                {expandedMonths[month] && (
+                  <div className="divide-y divide-gray-100">
+                    {monthNews.map((news) => (
+                      <div key={news.id} className={`p-6 border-l-4 ${priorityColors[news.priority]} hover:bg-gray-50 transition-colors duration-200`}>
+                        <div className="flex flex-col lg:flex-row lg:items-start gap-4">
+                          {/* 날짜 및 시간 */}
+                          <div className="lg:w-48 flex-shrink-0">
+                            <div className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                              <span>{formatDate(news.date)}</span>
+                              <span className="text-gray-400">|</span>
+                              <span className="text-xs text-gray-500">{news.time}</span>
+                            </div>
+                            <span className={`inline-block mt-2 px-2 py-1 rounded-full text-xs font-medium ${categoryColors[news.category]}`}>
+                              {news.category}
+                            </span>
+                          </div>
+
+                          {/* 뉴스 내용 */}
+                          <div className="flex-1">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-2 leading-tight">
+                              {news.title}
+                            </h3>
+                            <div className="text-gray-600 text-sm leading-relaxed mb-3">
+                              <p>
+                                {expandedSummaries[news.id] 
+                                  ? news.summary 
+                                  : truncateText(news.summary, 100)
+                                }
+                              </p>
+                              {news.summary.length > 100 && (
+                                <button
+                                  onClick={() => toggleSummary(news.id)}
+                                  className="inline-flex items-center mt-2 px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full transition-colors"
+                                >
+                                  <MoreHorizontal className="w-3 h-3 mr-1" />
+                                  {expandedSummaries[news.id] ? '접기' : '더보기'}
+                                </button>
+                              )}
+                            </div>
+                            {news.link && news.link !== '' && (
+                              <a
+                                href={news.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
+                              >
+                                자세히 보기
+                                <ExternalLink className="ml-1 w-3 h-3" />
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </main>
+
+      {/* 푸터 */}
+      <footer className="bg-white border-t mt-12 py-8">
+        <div className="max-w-4xl mx-auto px-6 text-center text-gray-500 text-sm">
+          <p>실시간 뉴스 타임라인 - 정치, 시사, 경제, 사회 이슈를 한눈에</p>
+          <p className="mt-2">※ Google Trends API 연동으로 자동 업데이트 예정</p>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default TimelineNewsSite;

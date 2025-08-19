@@ -1,0 +1,12 @@
+timeline-news-site/
+├── index.html          # 메인 HTML 파일
+├── css/
+│   └── style.css      # 스타일시트
+├── js/
+│   ├── script.js      # 메인 JavaScript 로직
+│   └── data.js        # 뉴스 데이터
+├── assets/
+│   └── favicon.ico    # 파비콘
+├── README.md          # 프로젝트 설명서
+├── LICENSE            # 라이선스 파일
+└── .gitignore         # Git 무시 파일
