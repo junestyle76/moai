@@ -1,0 +1,50 @@
+:root{
+  --bg:#f7f8fa; --card:#fff; --ink:#111827; --muted:#6b7280; --line:#e5e7eb;
+  --brand:#2563eb; --brand-ink:#1e40af; --chip:#eff6ff; --positive:#dc2626; --warn:#f59e0b; --low:#9ca3af;
+  --radius:16px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:linear-gradient(180deg,#fbfdff, #f3f4f6);color:var(--ink);font-family:-apple-system,system-ui,"Noto Sans KR",sans-serif}
+a{color:var(--brand);text-decoration:none}
+a:hover{color:var(--brand-ink)}
+.wrap{max-width:1024px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 2px 12px rgba(17,24,39,0.04)}
+.head{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:18px 0}
+.brand{display:flex;align-items:center;gap:10px}
+.brand .logo{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff;font-weight:700}
+.brand h1{font-size:20px;margin:0}
+.meta{font-size:12px;color:var(--muted)}
+.years{display:flex;gap:8px;flex-wrap:wrap}
+.year{padding:8px 12px;border-radius:12px;border:1px solid var(--line);background:#f3f4f6;color:#374151;font-weight:600}
+.year.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 18px}
+.input{position:relative;flex:1;min-width:240px}
+.input input{width:100%;padding:12px 14px 12px 38px;border:1px solid var(--line);border-radius:12px;outline:none}
+.input svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:.55}
+select,button{border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 12px;font-weight:500;cursor:pointer}
+button.brand{background:var(--brand);color:#fff;border-color:var(--brand)}
+main{padding:28px 0 48px}
+.month{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:0 6px 18px rgba(17,24,39,.05)}
+.month_head{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;background:#f9fafb;border-bottom:1px solid var(--line);cursor:pointer}
+.month_head h2{margin:0;font-size:18px}
+.badge{background:#fff;border:1px solid var(--line);padding:4px 10px;border-radius:999px;font-size:12px;color:#374151}
+.news{display:flex;flex-direction:column}
+.item{display:flex;gap:16px;padding:16px 18px;border-left:4px solid var(--low);border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.pri-high{border-left-color:var(--positive)}
+.pri-medium{border-left-color:var(--warn)}
+.pri-low{border-left-color:var(--low)}
+.datebox{min-width:180px}
+.dt{font-size:13px;font-weight:700;color:#111}
+.time{font-size:12px;color:var(--muted)}
+.chip{display:inline-block;margin-top:8px;padding:4px 8px;border-radius:999px;background:var(--chip);color:var(--brand-ink);font-size:12px;font-weight:600}
+.content{flex:1}
+.title{margin:0 0 6px;font-size:16px;line-height:1.35}
+.summary{color:#4b5563;font-size:14px;line-height:1.5;margin:0}
+.summary.clamped{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis;white-space:normal}
+.actions{display:flex;gap:10px;align-items:center;margin-top:10px}
+.ghost{background:#f3f4f6;border-color:#e5e7eb;color:#374151}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+footer{border-top:1px solid var(--line);background:#fff}
+.foot{padding:18px 0;color:var(--muted);font-size:13px;text-align:center}
